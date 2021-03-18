@@ -19,12 +19,12 @@ subplot(2, 1, 2);
 imshow(IMG_BIN);
 
 # Squeletisation avec l'algorithme
-IMG_THIN=~bwmorph(IMG_BIN,'thin',Inf);
-figure;imshow(IMG_THIN);title('Thinned Image');
+##IMG_THIN=~bwmorph(IMG_BIN,'thin',Inf);
+##figure;imshow(IMG_THIN);title('Thinned Image');
 
 # Squeletisation avec matlab
-##IMG_THIN = squeletisation.skl(IMG_ORG, IMG_BIN);
-##figure;imshow(IMG_THIN);title('Squeletisation');
+IMG_THIN = squeletisation.skl(IMG_ORG, IMG_BIN);
+figure;imshow(IMG_THIN);title('Squeletisation');
 
 img_minutiae = minutiae.calcul(IMG_THIN)
 
