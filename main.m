@@ -51,7 +51,7 @@ db2 = sum(bif2(:) == 1)
 dt2 = sum(ter2(:) == 1)
 
 # Comparaison des bifurcations
-dh1 = minutiae.hausdorff(bif1, bif2)
-dh2 = minutiae.hausdorff(ter1, ter2)
+##dh1 = minutiae.hausdorff(bif1, bif2)
+##dh2 = minutiae.hausdorff(ter1, ter2)
 dh3 = minutiae.compare_minuties(bif1, bif2)
 dh4 = minutiae.compare_minuties(ter1, ter2)

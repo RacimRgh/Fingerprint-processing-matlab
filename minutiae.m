@@ -82,31 +82,30 @@ classdef minutiae
 ##    endfunction
   
     function [IMG_MINUTIAE, bif, ter] = calcul2(IMG_THIN)
-##      s=size(IMG_THIN)
       [nl, nc] = size(IMG_THIN);
-      imshow(IMG_THIN);title('Minutiae');
+      imshow(IMG_THIN);title('Minutiae'); # image originale
       bif = zeros(nl, nc);
       ter = zeros(nl, nc);
       for i=2:nl-2
         for j = 2:nc-2
           if IMG_THIN(i,j)==1
-##              if(i!=1 && j!=1 && i<r-2 && j<c-2) 
-##                P = squeletisation.sequencePixel(IMG_THIN,i,j);
-                P=[IMG_THIN(i-1,j) IMG_THIN(i-1,j+1) IMG_THIN(i,j+1) IMG_THIN(i+1,j+1) IMG_THIN(i+1,j) IMG_THIN(i+1,j-1) IMG_THIN(i,j-1) IMG_THIN(i-1,j-1) IMG_THIN(i-1,j)];
+##              if(i!=1 && j!=1 && i<r-2 && j<c-2)
+                P = squeletisation.sequencePixel(IMG_THIN,i,j); # récupérer la séquence de pixels autour 
                 CN=0;
-                for x=1:8
+                # Calculer le coefficient CN
+                for x=2:9
                   CN = CN +(abs(P(x+1) - P(x)));
                 endfor
                 CN = 0.5*CN;
                 CN = round(CN);
                 switch(CN) %traitement en fonction du type de minutie
                   case {1} % Points terminaux
-                    ter(i,j)=1;
+                    ter(i,j)=1; # matrice de points terminaux
                     hold on;
                     plot(i,j,'or');
                     break;
                  case {3} % Points de Biffurcation
-                    bif(i,j) = 1;
+                    bif(i,j) = 1; # matrice de points de bifurcation
                     hold on;
                     plot(i,j,'xb');
                     break;
@@ -114,45 +113,48 @@ classdef minutiae
 ##                    hold on;
 ##                    plot(x,y,'*y');
 ##                    break;
-                endswitch  % end de la boucle switch
+                endswitch
             endif
         endfor
       endfor
       IMG_MINUTIAE = IMG_THIN;
     endfunction
+    
     # Calcul de la distance de Hausdorff
+    # Fonction qui calcule la distance de hausdorff entre 2 matrices envoyés en paramètreelayout
+    # Les paramètres seront dans notre cas les matrices de bifurcations et de terminaisons de 2 empreintes digitales différentes
     function result = compare_minuties(tab1, tab2)
+      # Récupérer les indices des minuties
+      [r1 c1] = find(tab1==1); # r1 == lignes, c1 == colonnes tab1(r1,c1)==minutie
+      [r2 c2] = find(tab2==1);
+      n = size(r1, 1); # nombre de minuties à comparer (taille du tableau)
+      m = size(r2, 1);
       [nl,nc] = size(tab1);
       h = 0;
       ls=[];
-      shortest=1000;
-      tab = tab1.*tab2;
-      for x=1:nl
-        for y=1:nc
-          if tab1(x,y)==1
-            for i=1:nl
-              for j=1:nc
-                if tab2(i,j)==1
-                  Y = abs(y-j)*abs(y-j);
-                  X = abs(x-i)*abs(x-i);
-                  d = round(sqrt(X+Y)); 
-                  if shortest > d
-                    shortest = d;
-                    ls = [ls, shortest];
-                  endif
-                endif
-              endfor
-            endfor
+      shortest=10000;
+      for x=1:n
+        for y=1:m
+          # Calcul de la distance euclidienne entre 2 pixels (minuties)
+          Y = abs(c2(y)-c1(x))*abs(c2(y)-c1(x));
+          X = abs(r2(y)-r1(x))*abs(r2(y)-r1(x));
+          d = round(sqrt(X+Y)); 
+          if shortest > d
+            shortest = d;
+            ls(end+1) = shortest; # Ajouter la nouvelle valeur au tableau
           endif
         endfor
       endfor
-      result = min(ls);
+      result = max(ls);
     endfunction
+    
     # Calcul de la distance de Hausdorff
     function dh = hausdorff(tab1, tab2)
       tab1 = tab1(tab1>=0);
       tab2 = tab2(tab2>=0);
-      dh = max(minutiae.compute_dist(tab1, tab2), minutiae.compute_dist(tab2, tab1));
+      d1 = minutiae.compute_dist(tab1, tab2);
+      d2 = minutiae.compute_dist(tab2, tab1);
+      dh = max(d1, d2);
     endfunction
     # Calcul de la distance
     function dist = compute_dist(A, B)
