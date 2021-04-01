@@ -10,6 +10,6 @@ TO DO
 
 ## Results
 
-![Original image](ED_DATA/ED_3_6_originale.png)
+![Original image](ED_data/ED_3_6_originale.png)
 ![Skeleton image](Results/skel.png)
 ![Minutiae extraction](Results/minutiae-extraction.png)
